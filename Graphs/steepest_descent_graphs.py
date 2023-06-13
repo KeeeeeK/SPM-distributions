@@ -7,6 +7,47 @@ import scipy as sc
 from SPM_distributions.Steepest_descent.constant_phase_curve import constant_phase_curve
 
 
+def z_k_position(Z: complex = 1 + 1j,
+                 k_range: np.ndarray = np.arange(-6, 6 + 1, 1),
+                 figsize: None | tuple[float, float] = None):
+    x_min, x_max = -22, 22
+    y_min, y_max = -10, 10
+    axes = _fixed_axes(x_min, x_max, y_min, y_max, figsize)
+    _arrows(axes, x_min, x_max, y_min, y_max, 0.0005)  # bold axes with arrows
+
+    # axis tuning
+    axes.spines['bottom'].set_position('center')
+    axes.spines[['left', 'top', 'right']].set_visible(False)
+    plt.yticks([])
+    axes.xaxis.set_major_formatter(mpl.ticker.FuncFormatter(
+        lambda val, pos: '{:.0g}$\pi$'.format(val / np.pi) if val != 0 else ''))
+    axes.xaxis.set_major_locator(mpl.ticker.MultipleLocator(base=np.pi))
+
+    for k in k_range:
+        # plotting points z_k
+        z_k = 1j * sc.special.lambertw(Z, k=k)
+        x_k, y_k = np.real(z_k), np.imag(z_k)
+        plt.scatter([x_k], [y_k], color='red', marker='o', s=14)
+        # plotting borders of area where z_k may appear
+        eps = 10 ** -3
+        if k > 0:
+            axes.annotate(f'$k={k}$' if k<4 else r'', xy=(0, y_max - 2), xytext=(2*np.pi*k-2, y_max - 2))
+            _draw_border_of_z_k_area(np.linspace(2 * k * np.pi + eps, 2 * (k + 1 / 2) * np.pi - eps, 50))
+        elif k < 0:
+            axes.annotate(f'$k={k}$' if k > -4 else r'', xy=(0, y_max - 2), xytext=(2 * np.pi * k - 1, y_max - 2))
+            _draw_border_of_z_k_area(np.linspace(2 * (k + 1 / 2) * np.pi + eps, 2 * (k + 1) * np.pi - eps, 50))
+        else:  # k==0
+            axes.annotate(f'$k=0$', xy=(0, y_max - 2), xytext=(-1, y_max - 2))
+            _draw_border_of_z_k_area(np.linspace(2 * k * np.pi + eps, 2 * (k + 1 / 2) * np.pi - eps, 50))
+            plt.plot([0, 0], [y_min, -1], color='black', linestyle='--', linewidth=2)
+
+
+def _draw_border_of_z_k_area(eta):
+    z_border = 1j * (-eta / np.tan(eta) - eta * 1j)
+    x_border, y_border = np.real(z_border), np.imag(z_border)
+    plt.plot(x_border, y_border, color='black', linestyle='--', linewidth=2)
+
+
 def integration_contour(Z: complex = 1 + 1j,
                         k_range: np.ndarray = np.arange(-5, 1, 1),
                         figsize: None | tuple[float, float] = None):
@@ -17,7 +58,7 @@ def integration_contour(Z: complex = 1 + 1j,
     axes = _fixed_axes(x_min, x_max, y_min, y_max, figsize)
     path_marker, markersize = _arrow_path(), 10
     plt.axis('off')
-    _arrows(axes, x_min, x_max, y_min, y_max)  # bold axes with arrows
+    _arrows(axes, x_min, x_max, y_min, y_max, 0.0002)  # bold axes with arrows
 
     # plotting main part of new contour
     z = sp.Symbol('z')
@@ -90,7 +131,7 @@ def constant_phase_curve_2signs(Z: complex = 1 + 1j,
     x_min, x_max = -20, 20
     y_min, y_max = -10, 15
     axes = _fixed_axes(x_min, x_max, y_min, y_max, figsize)
-    _arrows(axes, x_min, x_max, y_min, y_max)  # bold axes with arrows
+    _arrows(axes, x_min, x_max, y_min, y_max, 0.00001)  # bold axes with arrows
 
     z = sp.Symbol('z')
     analytic_func = z ** 2 / 2j + 1j * Z * sp.exp(1j * z)
@@ -104,12 +145,13 @@ def constant_phase_curve_2signs(Z: complex = 1 + 1j,
             plt.plot(*zip(*points), color=f'C{0 if gamma_sign == 1 else 1}')
 
 
-def _arrows(axes, x_min, x_max, y_min, y_max):
+def _arrows(axes, x_min, x_max, y_min, y_max, dy):
+    # dy is crutch... to make right arrow slightly lower
     arrowprops = dict(arrowstyle=mpl.patches.ArrowStyle.CurveB(head_length=1), color='black')
     p = - y_min / (y_max - y_min)
-    axes.annotate('', xy=(1.05, p), xycoords='axes fraction', xytext=(0.99, p), arrowprops=arrowprops)
+    axes.annotate('', xy=(1.05, p - dy), xycoords='axes fraction', xytext=(0.99, p - dy), arrowprops=arrowprops)
     axes.annotate('', xy=(0.5, 1.05), xycoords='axes fraction', xytext=(0.5, 0.99), arrowprops=arrowprops)
-    axes.annotate(r'Re$(z)$', xy=(x_max, 0), xytext=(x_max + 0.03 * (x_max - x_min), 0.01 * (y_max - y_min)))
+    axes.annotate(r'Re$(z)$', xy=(x_max, 0), xytext=(x_max + 0.03 * (x_max - x_min), 0.02 * (y_max - y_min)))
     axes.annotate(r'Im$(z)$', xy=(0, y_max), xytext=(0.01 * (x_max - x_min), y_max + 0.02 * (y_max - y_min)))
     axes.hlines(0, x_min, x_max, linewidth=1, colors='black')
     axes.vlines(0, y_min, y_max, linewidth=1, colors='black')
@@ -128,7 +170,6 @@ def _fixed_axes(x_min, x_max, y_min, y_max, figsize):
     """Fixes figure size and limits the visible area of the graph to the specified parameters"""
     figsize = ((x_max - x_min) / 2 / 2.54, (y_max - y_min) / 2 / 2.54) if figsize is None else figsize
     fig = plt.figure(figsize=figsize)
-    # axes = fig.add_axes([0.05, 0.05, 0.95, 0.95])
     axes = plt.gca()
     axes.set_xlim(x_min, x_max)
     axes.set_ylim(y_min, y_max)
@@ -141,7 +182,8 @@ def _intersection_with_vertical_line(points, x0):
 
 
 if __name__ == '__main__':
-    constant_phase_curve_2signs()
-    # integration_contour()
+    # constant_phase_curve_2signs()
+    integration_contour()
+    # z_k_position()
     # plt.show()
-    plt.savefig('constant_phase_curve', dpi=500)
+    plt.savefig('constant_phase_curve', dpi=300)
