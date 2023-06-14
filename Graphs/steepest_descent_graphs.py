@@ -10,6 +10,15 @@ from SPM_distributions.Steepest_descent.constant_phase_curve import constant_pha
 def z_k_position(Z: complex = 1 + 1j,
                  k_range: np.ndarray = np.arange(-6, 6 + 1, 1),
                  figsize: None | tuple[float, float] = None):
+    """
+    Displays the boundary of the possible positions of z_k, and also plots saddle points for given Z
+
+    After calling, you should use plt.show or plt.savefig to look at the result
+    :param Z: = -2i A * Gamma (designation in the article)
+    :param k_range: array of integers.
+    Saddle points with numbers from the array k_range will be marked on the graph.
+    :param figsize: param for plt.figure. If None, it will be replaced with params used in article
+    """
     x_min, x_max = -22, 22
     y_min, y_max = -10, 10
     axes = _fixed_axes(x_min, x_max, y_min, y_max, figsize)
@@ -51,6 +60,14 @@ def _draw_border_of_z_k_area(eta: np.ndarray | float):
 def integration_contour(Z: complex = 1 + 1j,
                         k_range: np.ndarray = np.arange(-5, 1, 1),
                         figsize: None | tuple[float, float] = None):
+    """Schematically depicts on the complex plane the deformation of the integration contour specified in the article.
+     The initial integration contour is a straight line from -R to R
+
+    After calling, you should use plt.show or plt.savefig to look at the result
+    :param Z: = -2i A * Gamma (designation in the article)
+    :param k_range: array of integers.
+    Saddle points with numbers from the array k_range will be marked on the graph.
+    :param figsize: param for plt.figure. If None, it will be replaced with params used in article"""
     steps_params = (0.1, 500, 300)
     big_step = 5  # the frequency of the arrows displaying the direction of integration
     x_min, x_max = -40, 40
@@ -123,6 +140,7 @@ def constant_phase_curve_2signs(Z: complex = 1 + 1j,
                                 figsize: None | tuple[float, float] = None) -> None:
     """
     Plots constant phase curve for both cases (Gamma>0 and Gamma<0)
+    
     After calling, you should use plt.show or plt.savefig to look at the result
     :param Z: = -2i A * Gamma (designation in the article)
     :param k_range: array of integers.
@@ -148,7 +166,7 @@ def constant_phase_curve_2signs(Z: complex = 1 + 1j,
 
 
 def _arrows(axes, x_min, x_max, y_min, y_max, dy: float) -> None:
-    # dy is crutch... to make right arrow slightly lower
+    # dy is crutch to make right arrow slightly lower
     arrowprops = dict(arrowstyle=mpl.patches.ArrowStyle.CurveB(head_length=1), color='black')
     p = - y_min / (y_max - y_min)
     axes.annotate('', xy=(1.05, p - dy), xycoords='axes fraction', xytext=(0.99, p - dy), arrowprops=arrowprops)
@@ -179,6 +197,7 @@ def _fixed_axes(x_min, x_max, y_min, y_max, figsize: None | tuple[float, float])
 
 
 def _intersection_with_vertical_line(points: np.ndarray, x0: float) -> float:
+    """Searches for the y coordinate of a given pointwise given curve with a vertical line in x0"""
     interpolating_func = sc.interpolate.interp1d(*zip(*points))
     return interpolating_func(x0)
 
