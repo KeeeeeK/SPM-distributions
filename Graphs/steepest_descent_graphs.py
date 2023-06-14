@@ -31,7 +31,7 @@ def z_k_position(Z: complex = 1 + 1j,
         # plotting borders of area where z_k may appear
         eps = 10 ** -3
         if k > 0:
-            axes.annotate(f'$k={k}$' if k<4 else r'', xy=(0, y_max - 2), xytext=(2*np.pi*k-2, y_max - 2))
+            axes.annotate(f'$k={k}$' if k < 4 else r'', xy=(0, y_max - 2), xytext=(2 * np.pi * k - 2, y_max - 2))
             _draw_border_of_z_k_area(np.linspace(2 * k * np.pi + eps, 2 * (k + 1 / 2) * np.pi - eps, 50))
         elif k < 0:
             axes.annotate(f'$k={k}$' if k > -4 else r'', xy=(0, y_max - 2), xytext=(2 * np.pi * k - 1, y_max - 2))
@@ -42,7 +42,7 @@ def z_k_position(Z: complex = 1 + 1j,
             plt.plot([0, 0], [y_min, -1], color='black', linestyle='--', linewidth=2)
 
 
-def _draw_border_of_z_k_area(eta):
+def _draw_border_of_z_k_area(eta: np.ndarray | float):
     z_border = 1j * (-eta / np.tan(eta) - eta * 1j)
     x_border, y_border = np.real(z_border), np.imag(z_border)
     plt.plot(x_border, y_border, color='black', linestyle='--', linewidth=2)
@@ -63,6 +63,8 @@ def integration_contour(Z: complex = 1 + 1j,
     # plotting main part of new contour
     z = sp.Symbol('z')
     analytic_func = z ** 2 / 2j + 1j * Z * sp.exp(1j * z)
+    if 0 not in k_range:
+        raise ValueError("0 should be in k_range anyway")
     for k in k_range:
         # plotting points z_k
         z_k = 1j * sc.special.lambertw(Z, k=k)
@@ -145,7 +147,7 @@ def constant_phase_curve_2signs(Z: complex = 1 + 1j,
             plt.plot(*zip(*points), color=f'C{0 if gamma_sign == 1 else 1}')
 
 
-def _arrows(axes, x_min, x_max, y_min, y_max, dy):
+def _arrows(axes, x_min, x_max, y_min, y_max, dy: float) -> None:
     # dy is crutch... to make right arrow slightly lower
     arrowprops = dict(arrowstyle=mpl.patches.ArrowStyle.CurveB(head_length=1), color='black')
     p = - y_min / (y_max - y_min)
@@ -166,17 +168,17 @@ def _arrow_path():
     return mpl.path.Path(vertexes, codes)
 
 
-def _fixed_axes(x_min, x_max, y_min, y_max, figsize):
+def _fixed_axes(x_min, x_max, y_min, y_max, figsize: None | tuple[float, float]):
     """Fixes figure size and limits the visible area of the graph to the specified parameters"""
     figsize = ((x_max - x_min) / 2 / 2.54, (y_max - y_min) / 2 / 2.54) if figsize is None else figsize
-    fig = plt.figure(figsize=figsize)
+    plt.figure(figsize=figsize)
     axes = plt.gca()
     axes.set_xlim(x_min, x_max)
     axes.set_ylim(y_min, y_max)
     return axes
 
 
-def _intersection_with_vertical_line(points, x0):
+def _intersection_with_vertical_line(points: np.ndarray, x0: float) -> float:
     interpolating_func = sc.interpolate.interp1d(*zip(*points))
     return interpolating_func(x0)
 
@@ -185,5 +187,6 @@ if __name__ == '__main__':
     # constant_phase_curve_2signs()
     integration_contour()
     # z_k_position()
+
     # plt.show()
-    plt.savefig('constant_phase_curve', dpi=300)
+    plt.savefig('constant_phase_curve', dpi=500)
