@@ -1,10 +1,12 @@
 import numpy as np
 import numba as nb
-
+from SPM_distributions.Husimi.F_normalized import number_type
 
 @nb.vectorize('float64(float64, float64, float64, float64, float64, float64)',
               nopython=True, target_backend='parallel', fastmath=False)
-def wigner(alpha_abs, alpha_arg, beta_abs, beta_arg, gamma, n_sigma):
+def wigner(alpha_abs: number_type, alpha_arg: number_type,
+           beta_abs: number_type, beta_arg: number_type,
+           gamma: number_type, n_sigma: number_type) -> number_type:
     """
     alpha is parameter of coherence of initial state
     :param alpha_abs: module of alpha
