@@ -16,7 +16,7 @@ def husimi(alpha: complex | number_type,
     :param method: the method that will be used to find the values of the F normalized.
      It should be on of 'sum' (direct summation), '1b' (1 branch), '2b' (2 branches).
      For further details see the documentation in the F_normalized.py file
-    :param n_sigma: parameter that will be used only if method == 'sum'.
+    :param n_sigma: parameter that will be used only if method == 'sum'. More details in Fn_sum documentation
     :return: the value of husimi function in point beta
     """
     match method:
