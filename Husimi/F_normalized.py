@@ -32,6 +32,9 @@ def Fn_sum(r: number_type, phi: number_type, gamma: number_type, n_sigma: number
     return np.abs(np.exp(-r) * first_terms + sum_)
 
 
+lambertw = np.vectorize(sc.special.lambertw)
+
+
 def Fn_1b(r: number_type, phi: number_type, gamma: number_type):
     """
     This is method of calculating F normalized accounting only 1 branch.
@@ -43,10 +46,7 @@ def Fn_1b(r: number_type, phi: number_type, gamma: number_type):
     """
     Z = -2j * r * np.exp(1j * phi) * gamma
     k_bar = -(np.round((np.angle(Z) + (np.abs(Z) + np.pi / 2) * np.sign(gamma)) / (2 * np.pi)))
-    if hasattr(k_bar, '__iter__'):
-        z_k = np.array([1j * sc.special.lambertw(Z[i], k=int(k_bar[i])) for i in range(len(k_bar))])
-    else:
-        z_k = 1j * sc.special.lambertw(Z, k=int(k_bar))
+    z_k = 1j * lambertw(Z, k=np.int_(k_bar))
     f_in_z_k = z_k ** 2 / 2j + z_k
     return np.exp(np.real(f_in_z_k) / (2 * gamma) - r) / np.sqrt(np.abs(1j + z_k))
 
@@ -66,20 +66,15 @@ def Fn_2b(r: number_type, phi: number_type, gamma: number_type):
     k_bar1 = np.floor(k_approx)
     k_bar2 = k_bar1 + 1
     sum_ = 0
-    if hasattr(k_approx, '__iter__'):
-        for k_bar in (k_bar1, k_bar2):
-            z_k = np.array([1j * sc.special.lambertw(Z[i], k=int(k_bar[i])) for i in range(len(k_approx))])
-            f_in_z_k = z_k ** 2 / 2j + z_k
-            sum_ += np.exp(f_in_z_k / (2 * gamma) - r) / np.sqrt(1j + z_k)
-    else:
-        for k_bar in (k_bar1, k_bar2):
-            z_k = 1j * sc.special.lambertw(Z, k=int(k_bar))
-            f_in_z_k = z_k ** 2 / 2j + z_k
-            sum_ += np.exp(f_in_z_k / (2 * gamma) - r) / np.sqrt(1j + z_k)
+    for k_bar in (k_bar1, k_bar2):
+        z_k = 1j * sc.special.lambertw(Z, k=np.int_(k_bar))
+        f_in_z_k = z_k ** 2 / 2j + z_k
+        sum_ += np.exp(f_in_z_k / (2 * gamma) - r) / np.sqrt(1j + z_k)
     return np.abs(sum_)
 
 
 if __name__ == '__main__':
+    # just check that they give the same result
     params = [np.array([1000, 2200]), np.array([-2, 2 * 2.2]), 0.001]
     print('direct sum:', Fn_sum(*params, 10))
     print('  1 branch:', Fn_1b(*params))
