@@ -1,6 +1,6 @@
 from typing import Literal
 import numpy as np
-from F_normalized import Fn_sum, Fn_1b, Fn_2b, number_type
+from SPM_distributions.Husimi.F_normalized import Fn_sum, Fn_1b, Fn_2b, number_type
 
 methods_str = Literal['sum': str, '1b': str, '2b': str]
 
