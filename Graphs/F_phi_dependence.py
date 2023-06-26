@@ -13,7 +13,7 @@ def Fn_plot():
     fig, ax = plt.subplots(layout=None)
     n_dots = 10 ** 4
     phi = np.linspace(0, 2 * np.pi, n_dots)
-    _set_label(ax)
+    set_label(ax, r'$\phi$', r'$\left|F(r e^{i\phi}, e^{i\Gamma})\right|e^{-r}$')
     _pi_x_axis(ax)
     plt.plot([], [], ' ', label="$\Gamma = 10^{-4}$", c='C10')
     for r, gamma in ((10 ** 4, 10 ** -4), (2 * 10 ** 4, 10 ** -4), (3.1 * 10 ** 4, 10 ** -4))[::-1]:
@@ -22,12 +22,12 @@ def Fn_plot():
     plt.legend()
 
 
-def _set_label(axes):
+def set_label(axes, x_label, y_label):
+    label_prop = dict(rotation=0)
     for set_label, axis, label, label_coords in (
-            (axes.set_xlabel, axes.xaxis, r'\phi', np.array([1.04, 0])),
-            (axes.set_ylabel, axes.yaxis, r'\left|F(r e^{i\phi}, e^{i\Gamma})\right|e^{-r}', np.array([-0.01, 1.03]))):
-        label_prop = dict(rotation=0)
-        set_label('$' + label + '$', label_prop)
+            (axes.set_xlabel, axes.xaxis, x_label, np.array([1.04, 0])),
+            (axes.set_ylabel, axes.yaxis, y_label, np.array([-0.01, 1.03]))):
+        set_label(label, label_prop)
         axis.set_label_coords(*label_coords)
 
 

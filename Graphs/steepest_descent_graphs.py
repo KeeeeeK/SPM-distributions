@@ -8,8 +8,7 @@ from SPM_distributions.Steepest_descent.constant_phase_curve import constant_pha
 
 
 def z_k_position(Z: complex = 1 + 1j,
-                 k_range: np.ndarray = np.arange(-6, 6 + 1, 1),
-                 figsize: None | tuple[float, float] = None):
+                 k_range: np.ndarray = np.arange(-6, 6 + 1, 1),):
     """
     Displays the boundary of the possible positions of z_k, and also plots saddle points for given Z
 
@@ -21,7 +20,7 @@ def z_k_position(Z: complex = 1 + 1j,
     """
     x_min, x_max = -22, 22
     y_min, y_max = -10, 10
-    axes = _fixed_axes(x_min, x_max, y_min, y_max, figsize)
+    axes = fixed_axes(x_min, x_max, y_min, y_max, default_figsize(x_min, x_max, y_min, y_max))
     _arrows(axes, x_min, x_max, y_min, y_max, 0.0005)  # bold axes with arrows
 
     # axis tuning
@@ -58,8 +57,7 @@ def _draw_border_of_z_k_area(eta: np.ndarray | float):
 
 
 def integration_contour(Z: complex = 1 + 1j,
-                        k_range: np.ndarray = np.arange(-5, 1, 1),
-                        figsize: None | tuple[float, float] = None):
+                        k_range: np.ndarray = np.arange(-5, 1, 1)):
     """Schematically depicts on the complex plane the deformation of the integration contour specified in the article.
      The initial integration contour is a straight line from -R to R
 
@@ -72,7 +70,7 @@ def integration_contour(Z: complex = 1 + 1j,
     big_step = 5  # the frequency of the arrows displaying the direction of integration
     x_min, x_max = -40, 40
     y_min, y_max = -10, 35
-    axes = _fixed_axes(x_min, x_max, y_min, y_max, figsize)
+    axes = fixed_axes(x_min, x_max, y_min, y_max, default_figsize(x_min, x_max, y_min, y_max))
     path_marker, markersize = _arrow_path(), 10
     plt.axis('off')
     _arrows(axes, x_min, x_max, y_min, y_max, 0.0002)  # bold axes with arrows
@@ -136,11 +134,10 @@ def integration_contour(Z: complex = 1 + 1j,
 
 
 def constant_phase_curve_2signs(Z: complex = 1 + 1j,
-                                k_range: np.ndarray = np.arange(-5, 6, 1),
-                                figsize: None | tuple[float, float] = None) -> None:
+                                k_range: np.ndarray = np.arange(-5, 6, 1)) -> None:
     """
     Plots constant phase curve for both cases (Gamma>0 and Gamma<0)
-    
+
     After calling, you should use plt.show or plt.savefig to look at the result
     :param Z: = -2i A * Gamma (designation in the article)
     :param k_range: array of integers.
@@ -150,7 +147,7 @@ def constant_phase_curve_2signs(Z: complex = 1 + 1j,
     steps_params = (0.1, 300, 300)
     x_min, x_max = -20, 20
     y_min, y_max = -10, 15
-    axes = _fixed_axes(x_min, x_max, y_min, y_max, figsize)
+    axes = fixed_axes(x_min, x_max, y_min, y_max, default_figsize(x_min, x_max, y_min, y_max))
     _arrows(axes, x_min, x_max, y_min, y_max, 0.00001)  # bold axes with arrows
 
     z = sp.Symbol('z')
@@ -185,10 +182,11 @@ def _arrow_path():
              mpl.path.Path.LINETO, mpl.path.Path.CLOSEPOLY]
     return mpl.path.Path(vertexes, codes)
 
+def default_figsize(x_min, x_max, y_min, y_max):
+    return (x_max - x_min) / 2 / 2.54, (y_max - y_min) / 2 / 2.54
 
-def _fixed_axes(x_min, x_max, y_min, y_max, figsize: None | tuple[float, float]):
+def fixed_axes(x_min, x_max, y_min, y_max, figsize: None | tuple[float, float]):
     """Fixes figure size and limits the visible area of the graph to the specified parameters"""
-    figsize = ((x_max - x_min) / 2 / 2.54, (y_max - y_min) / 2 / 2.54) if figsize is None else figsize
     plt.figure(figsize=figsize)
     axes = plt.gca()
     axes.set_xlim(x_min, x_max)
