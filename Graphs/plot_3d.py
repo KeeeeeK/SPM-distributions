@@ -23,6 +23,16 @@ def plot_3d(X, Y, Z, cmap='inferno'):
     ax.plot_surface(X, Y, Z, cmap=cmap, shade=False)
 
 
+def plot_from_npz(alpha: complex | float | int, gamma: float | int, file_name: str, cmap='inferno'):
+    Z = np.load(file_name)
+    freq = Z.shape[0]
+
+    rect_width, rect_height = 5, 120
+    X, Y = XY_rect(0, rect_width / 2, freq, 0, rect_height / 2, freq)
+    plot_3d(X, Y, Z)
+
+
+
 def plot_contourf(X, Y, Z, cmap='inferno'):
     cs = plt.contourf(X, Y, Z, levels=20, cmap=cmap)
     plt.colorbar(cs)
@@ -54,7 +64,7 @@ def main_part_wigner(alpha: complex | float | int, gamma: float | int, freq: int
     :param freq: number of dots in x and y direction.
     Unfortunately, this method is too slow to show smooth graph in 3d
     """
-    rect_width, rect_height = 3.5, 120
+    rect_width, rect_height = 5, 120
 
     r_mean = np.abs(alpha)
     phi_mean = - 2 * np.abs(alpha) ** 2 * gamma
@@ -63,7 +73,9 @@ def main_part_wigner(alpha: complex | float | int, gamma: float | int, freq: int
     XY_rotated = (X + r_mean + 1j * Y) * np.exp(1j * phi_mean)
     Z = wigner(np.abs(alpha), np.angle(alpha), np.abs(XY_rotated), np.angle(XY_rotated), gamma, 10**-2)
     print(np.min(Z), np.max(Z))
+    # np.save(f'freq{int(freq)}', Z)
     return X, Y, Z
+
 
 
 if __name__ == '__main__':
@@ -73,8 +85,9 @@ if __name__ == '__main__':
     s = time()
 
     # plot_3d(*main_part_husimi(2.7 * 1000, 10 ** -6))
-    plot_contourf(*main_part_husimi(2.7 * 1000, 10 ** -6))
-    # plot_contourf(*main_part_wigner(2.7 * 1000, 10 ** -6, freq=150))
-
+    # plot_contourf(*main_part_husimi(2.7 * 1000, 10 ** -6, freq=500))
+    # freq=100 ~ 30s, freq=1000 ~ 50min
+    # plot_contourf(*main_part_wigner(2.7 * 1000, 10 ** -6, freq=1000))
+    plot_from_npz(2.7 * 1000, 10 ** -6, 'freq1000.npy')
     print(time() - s)
     plt.show()
