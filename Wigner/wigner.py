@@ -16,7 +16,7 @@ def wigner(alpha_abs: number_type, alpha_arg: number_type,
     :param beta_abs: module of beta
     :param beta_arg: angle of beta
     :param gamma: parameter of non-linearity. In the article it is named \Gamma
-    :param tol: the accuracy, less than 1
+    :param tol: the accuracy of result values, LESS THAN 1 !!!
     :return: the value of wigner function in point beta
     """
     Phi0 = alpha_arg - beta_arg + gamma
@@ -27,10 +27,10 @@ def wigner(alpha_abs: number_type, alpha_arg: number_type,
 
     def func(k):
         z = A * np.exp(-1j * gamma * k)
-        return np.real(np.sqrt(z * z + k * k) - k * np.arcsinh(k / z)) - A + alpha_abs * alpha_abs * (
-                    1 - np.cos(2 * k * gamma))
+        return np.real(np.sqrt(z * z + k * k) - k * np.arcsinh(k / z)) - A + \
+            alpha_abs * alpha_abs * (1 - np.cos(2 * k * gamma))
 
-    # binary search algorithm
+    # binary search algorithm to find k_max
     for i in range(np.int_(np.log2(np.pi / 2 / gamma))):
         if func(mid) > log_tol:
             left = mid
@@ -46,7 +46,7 @@ def wigner(alpha_abs: number_type, alpha_arg: number_type,
         z = A * t
         V_k = np.sqrt(z * z + k * k) - k * np.arcsinh(k / z) - np.log(k * k + z * z) / 4
         sum_fourier += np.exp(1j * k * Phi0 + V_k + alpha_abs * alpha_abs * (1 - t * t) - norm)
-    return 2 / np.pi / np.sqrt(2 * np.pi) * (2 * np.real(sum_fourier) - np.exp(A - norm) / np.sqrt(A))
+    return 2 / np.pi / np.sqrt(2 * np.pi) * (2 * np.real(sum_fourier) + np.exp(A - norm) / np.sqrt(A))
 
 
 if __name__ == '__main__':
