@@ -25,13 +25,13 @@ def husimi(alpha_abs: number_type, alpha_arg: number_type,
     match method:
         case 'sum':
             return np.exp(-(alpha_abs - beta_abs) ** 2) / np.pi * \
-                np.abs(Fn_sum(alpha_abs * beta_abs, gamma + alpha_arg - beta_arg, -gamma, n_sigma)) ** 2
+                np.abs(Fn_sum(alpha_abs * beta_abs, alpha_arg - beta_arg - gamma, gamma, n_sigma)) ** 2
         case '1b':
             return np.exp(-(alpha_abs - beta_abs) ** 2) / np.pi * \
-                np.abs(Fn_1b(alpha_abs * beta_abs, gamma + alpha_arg - beta_arg, -gamma)) ** 2
+                np.abs(Fn_1b(alpha_abs * beta_abs, alpha_arg - beta_arg - gamma, gamma)) ** 2
         case '2b':
             return np.exp(-(alpha_abs - beta_abs) ** 2) / np.pi * \
-                np.abs(Fn_2b(alpha_abs * beta_abs, gamma + alpha_arg - beta_arg, -gamma)) ** 2
+                np.abs(Fn_2b(alpha_abs * beta_abs, alpha_arg - beta_arg - gamma, gamma)) ** 2
         case _:
             raise ValueError('Unknown method')
 
@@ -46,7 +46,7 @@ if __name__ == '__main__':
     beta_arg = np.linspace(0, 2 * np.pi, 10 ** 4)
     gamma = 10 ** -6
 
-    for method in ('1b', '2b', 'sum'):
+    for method in ('2b', '1b', 'sum'):
         s = time()
         husimi(alpha, 0, beta_abs, beta_arg, gamma, method=method)
         print(f'calc time of {method}: {time() - s} s')

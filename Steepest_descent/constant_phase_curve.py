@@ -51,7 +51,7 @@ def _positive_direction(z: sp.Symbol,
     Positive direction = the direction along which:
     1. Corresponds to the positive projection on the Re(z) axis
     2. Re(f(z)) decreases
-    3. Im(f(z)) constant
+    3. Im(f(z)) is constant
 
     :param z: the argument of the analytic function
     :param derivative: the derivative of analytic function of z

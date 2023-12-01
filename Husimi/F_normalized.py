@@ -75,7 +75,8 @@ def Fn_2b(r: number_type, phi: number_type, gamma: number_type):
 
 if __name__ == '__main__':
     # just check that they give the same result
-    params = [np.array([1000, 2200]), np.array([-2, 2 * 2.2]), 0.001]
-    print('direct sum:', Fn_sum(*params, 10))
-    print('  1 branch:', Fn_1b(*params))
+    gamma_ = 0.08
+    params = [np.array([1, 2.2])/gamma_, -2 * np.array([1, 2.2]), gamma_]
+    print('direct sum:', Fn_sum(*params, 20))
+    print('1 branch  :', Fn_1b(*params))
     print('2 branches:', Fn_2b(*params))
