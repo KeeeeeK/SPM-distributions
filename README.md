@@ -15,4 +15,4 @@ The Graphs folder contains the code that generates all the graphs used in the ar
 
 The normalize_check file is dedicated to verifying that the generated quasi-probability distribution is normalized by one. This condition is indeed satisfied with an accuracy of the order of accuracy of numerical integration.
 
-Testing of most functions is hidden in the same file where they are declared in the block эif '\_\_name\_\_=="\_\_main\_\_"'. I know it's not very good, but it's very convenient.
+Testing of most functions is hidden in the same file where they are declared in the block if '\_\_name\_\_=="\_\_main\_\_"'. I know it's not very good, but it's very convenient.
