@@ -11,8 +11,8 @@ The main functions of interest are along the paths Husimi.husimi.husimi and Wign
 
 The Steepest_descent folder contains the functions necessary to visualize the curves of the steepest descent. They take an arbitrary analytical function as an argument, which makes them useful in analyzing the pattern of constant phase curves not only in this project.
 
-The Graphs folder contains the code that generates all the graphs used in the article. Unlike the functions mentioned above, the code here is not so elegant)
+The Graphs folder contains the code that generates all the graphs used in the article. Unlike the functions mentioned above, the code here is not so elegant) 
 
-The normalize_check file is dedicated to verifying that the generated quasi-probability distribution is normalized by one.
+The normalize_check file is dedicated to verifying that the generated quasi-probability distribution is normalized by one. This condition is indeed satisfied with an accuracy of the order of accuracy of numerical integration.
 
 Testing of most functions is hidden in the same file where they are declared in the block 'if __name__=="__main__"'. I know it's not very good, but it's very convenient.
