@@ -14,7 +14,7 @@ def Richardson_integrate_2D(X, Y, Z):
 
 
 if __name__ == '__main__':
-    target_func = ['wigner', 'husimi', 'wigner_saved'][2]
+    target_func = ['wigner', 'husimi', 'wigner_saved'][1]
 
     if target_func == 'wigner':
         X, Y, Z = main_part_wigner(2.7 * 1000, 10 ** -6, freq=200, rect_width=10, rect_height=120, save_arr_name='')
@@ -28,7 +28,7 @@ if __name__ == '__main__':
     if negativity is True:
         Z = (np.abs(Z) - Z)/2
 
-    print(np.max(Z[1:,1:]-Z[:-1,:-1]))
+    # print(np.max(Z[1:,1:]-Z[:-1,:-1]))
     print(np.sum(Z<0)/(Z.shape[0]*Z.shape[1]))
     print(Richardson_integrate_2D(X, Y, Z))
     print(integrate_2D(X, Y, Z))

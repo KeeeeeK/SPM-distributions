@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 
 from tqdm import tqdm
 from typing import Sequence
-
+from plot_steepest_descent import default_figsize, ten_pt_text, fixed_axes
 
 def _best_k_slow(Z: int | float | complex, k_sign: -1 | 1) -> int:
     """This is a rather slow algorithm for finding \bar k at some Z, which makes the main contribution to the sum over
@@ -33,7 +33,7 @@ def plot_best_k(x_step_params: tuple[float, float, int],
     for i in tqdm(range(x_step_params[2])):
         for j in range(y_step_params[2]):
             K[i, j] = _best_k_slow(X[i, j] + 1j * Y[i, j], k_sign)
-
+    fixed_axes(*x_step_params[:-1], *y_step_params[:-1], figsize=default_figsize(*x_step_params[:-1], *y_step_params[:-1]))
     ax = plt.gca()
     ax.pcolor(X, Y, K, cmap='cool', shading='nearest', alpha=alpha)
 
@@ -78,14 +78,15 @@ def plot_annotations_for_k_bar(xy_tuples: Sequence[tuple[float | int, float | in
     """
     axes = plt.gca()
     for k, (x, y) in enumerate(xy_tuples):
-        axes.annotate(r'$\bar{k}=' + str(k * k_sign) + r'$', xy=(x, y * k_sign), xytext=(x + 0.4, y * k_sign + 0.2))
+        axes.annotate(r'$\bar{k}=' + str(k * k_sign) + r'$', xy=(x, y * k_sign), xytext=(x - 0.4, y * k_sign))
 
 
 if __name__ == '__main__':
+    ten_pt_text()
     Z_range, freq, k_sign = 11, 500, 1
 
     plot_best_k((-Z_range, Z_range, freq), (-Z_range, Z_range, freq), k_sign, alpha=1)
     plot_difference_less_eps(0.02, (-Z_range, Z_range, freq), (-Z_range, Z_range, freq), k_sign, alpha=1)
     plot_annotations_for_k_bar(((0, 0), (-1.8, -2.54), (-6, -6.5), (-10, -10)), k_sign)
 
-    plt.show()
+    plt.savefig('where_best_k_bar2', dpi=500)

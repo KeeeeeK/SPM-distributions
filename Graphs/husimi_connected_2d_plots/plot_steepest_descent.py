@@ -7,6 +7,10 @@ import scipy as sc
 from SPM_distributions.Steepest_descent.constant_phase_curve import constant_phase_curve
 
 
+def ten_pt_text():
+    mpl.rcParams.update({'font.size': 110/15})
+
+
 def z_k_position(Z: complex = 1 + 1j,
                  k_range: np.ndarray = np.arange(-6, 6 + 1, 1),):
     """
@@ -18,10 +22,10 @@ def z_k_position(Z: complex = 1 + 1j,
     Saddle points with numbers from the array k_range will be marked on the graph.
     :param figsize: param for plt.figure. If None, it will be replaced with params used in article
     """
-    x_min, x_max = -22, 22
+    x_min, x_max = -2, 22
     y_min, y_max = -10, 10
     axes = fixed_axes(x_min, x_max, y_min, y_max, default_figsize(x_min, x_max, y_min, y_max))
-    _arrows(axes, x_min, x_max, y_min, y_max, 0.0005)  # bold axes with arrows
+    _shifted_arrows(axes, x_min, x_max, y_min, y_max, 0.0005)  # bold axes with arrows
 
     # axis tuning
     axes.spines['bottom'].set_position('center')
@@ -42,8 +46,9 @@ def z_k_position(Z: complex = 1 + 1j,
             axes.annotate(f'$k={k}$' if k < 4 else r'', xy=(0, y_max - 2), xytext=(2 * np.pi * k - 2, y_max - 2))
             _draw_border_of_z_k_area(np.linspace(2 * k * np.pi + eps, 2 * (k + 1 / 2) * np.pi - eps, 50))
         elif k < 0:
-            axes.annotate(f'$k={k}$' if k > -4 else r'', xy=(0, y_max - 2), xytext=(2 * np.pi * k - 1, y_max - 2))
             _draw_border_of_z_k_area(np.linspace(2 * (k + 1 / 2) * np.pi + eps, 2 * (k + 1) * np.pi - eps, 50))
+            continue
+            axes.annotate(f'$k={k}$' if k > -4 else r'', xy=(0, y_max - 2), xytext=(2 * np.pi * k - 1, y_max - 2))
         else:  # k==0
             axes.annotate(f'$k=0$', xy=(0, y_max - 2), xytext=(-1, y_max - 2))
             _draw_border_of_z_k_area(np.linspace(2 * k * np.pi + eps, 2 * (k + 1 / 2) * np.pi - eps, 50))
@@ -70,7 +75,7 @@ def integration_contour(Z: complex = 1 + 1j,
     big_step = 5  # the frequency of the arrows displaying the direction of integration
     x_min, x_max = -40, 40
     y_min, y_max = -10, 35
-    axes = fixed_axes(x_min, x_max, y_min, y_max, default_figsize(x_min, x_max, y_min, y_max))
+    axes = fixed_axes(x_min, x_max, y_min, y_max, (6.3,1.752*2))
     path_marker, markersize = _arrow_path(), 10
     plt.axis('off')
     _arrows(axes, x_min, x_max, y_min, y_max, 0.0002)  # bold axes with arrows
@@ -86,7 +91,12 @@ def integration_contour(Z: complex = 1 + 1j,
         x_k, y_k = np.real(z_k), np.imag(z_k)
         plt.scatter([x_k], [y_k], color='red', marker='o', s=14)
         annotation = f'$k={k}$' if abs(k) <= 3 else r'$\dots$'
-        axes.annotate(annotation, xy=(x_k, y_k), xytext=(x_k + 0.5, y_k + 0.08) if k != 0 else (x_k + 0.6, y_k - 0.25))
+        x_ann = x_k - 3
+        y_ann = y_k + 0.08 - (k%2)*2
+        if abs(k) > 3:
+            x_ann = x_k - 1.1
+            y_ann = y_k + 0.4
+        axes.annotate(annotation, xy=(x_k, y_k), xytext=(x_ann, y_ann) if k != 0 else (x_k + 0.6, y_k - 0.25))
         # finding curve
         points = constant_phase_curve(z, analytic_func, (x_k, y_k), steps_params=steps_params)
         # saving some params for I_+ and I_-. For k==0 we should also limit range of variation of y
@@ -145,7 +155,7 @@ def constant_phase_curve_2signs(Z: complex = 1 + 1j,
     :param figsize: param for plt.figure. If None, it will be replaced with params used in article
     """
     steps_params = (0.1, 300, 300)
-    x_min, x_max = -20, 20
+    x_min, x_max = -15, 15
     y_min, y_max = -10, 15
     axes = fixed_axes(x_min, x_max, y_min, y_max, default_figsize(x_min, x_max, y_min, y_max))
     _arrows(axes, x_min, x_max, y_min, y_max, 0.001)  # bold axes with arrows
@@ -157,7 +167,7 @@ def constant_phase_curve_2signs(Z: complex = 1 + 1j,
         x_k, y_k = np.real(z_k), np.imag(z_k)
         plt.scatter([x_k], [y_k], color='red', marker='o', s=10)
         # if k>0:
-        axes.annotate(f'k={k}', xy=(x_k, y_k), xytext=(x_k - 2, y_k + 1.2))
+        axes.annotate(f'k={k}', xy=(x_k, y_k), xytext=(x_k - 1.2, y_k - 1.6))
         # elif k<0:
         #     axes.annotate(f'k={k}', xy=(x_k, y_k), xytext=(x_k - 2, y_k + 0.))
         # else:
@@ -179,6 +189,18 @@ def _arrows(axes, x_min, x_max, y_min, y_max, dy: float) -> None:
     axes.vlines(0, y_min, y_max, linewidth=0.5, colors='black')
     axes.spines[['right', 'top']].set_visible(False)
 
+
+def _shifted_arrows(axes, x_min, x_max, y_min, y_max, dy: float):
+    arrowprops = dict(arrowstyle=mpl.patches.ArrowStyle.CurveB(head_length=1), color='black', linewidth=0.5)
+    p = - y_min / (y_max - y_min)
+    axes.annotate('', xy=(1.05, p - dy), xycoords='axes fraction', xytext=(0.99, p - dy), arrowprops=arrowprops)
+    x_vert = 0.0842
+    axes.annotate('', xy=(x_vert, 1.035), xycoords='axes fraction', xytext=(x_vert, 0.99), arrowprops=arrowprops)
+    axes.annotate(r'Re$(z)$', xy=(x_max, 0), xytext=(x_max + 0.0 * (x_max - x_min), 0.02 * (y_max - y_min)))
+    axes.annotate(r'Im$(z)$', xy=(0, y_max), xytext=(0.01 * (x_max - x_min), y_max + 0.01 * (y_max - y_min)))
+    axes.hlines(0, x_min, x_max, linewidth=0.5, colors='black')
+    axes.vlines(0, y_min, y_max, linewidth=0.5, colors='black')
+    axes.spines[['right', 'top']].set_visible(False)
 
 def _arrow_path():
     """Makes mpl.path.Path object which looks like an arrow. Use to show the direction of integration contour"""
@@ -206,11 +228,9 @@ def _intersection_with_vertical_line(points: np.ndarray, x0: float) -> float:
     interpolating_func = sc.interpolate.interp1d(*zip(*points))
     return interpolating_func(x0)
 
-def new_font():
-    plt.rcParams.update({'font.size': 10})
 
 if __name__ == '__main__':
-    new_font()
+    ten_pt_text()
     # constant_phase_curve_2signs()
     # integration_contour()
     # z_k_position()
@@ -221,6 +241,6 @@ if __name__ == '__main__':
     func_map = {constant_phase_curve_2signs: 'constant_phase_curve_2signs',
                 integration_contour: 'integration_contour',
                 z_k_position: 'z_k_position'}
-    func = list(func_map)[0]
+    func = list(func_map)[1]
     func()
     plt.savefig(func_map[func], dpi=500)

@@ -1,8 +1,9 @@
 import matplotlib.pyplot as plt
-import matplotlib as mpl
 import numpy as np
 
 from SPM_distributions.Husimi.F_normalized import Fn_2b
+from SPM_distributions.Graphs.husimi_connected_2d_plots.plot_steepest_descent \
+    import ten_pt_text, fixed_axes
 
 
 def Fn_plot():
@@ -10,17 +11,18 @@ def Fn_plot():
     Draws F normalized depending on angle of its parameter.
     Simply speaking |F(r*exp(1j*phi))|exp(-r) as function on phi.
     """
-    fig, ax = plt.subplots(layout=None)
+    rescale = 1.05
+    ax = fixed_axes(0, 2 * np.pi, -0.01, 0.7, figsize=(3.15*rescale, 3.15*0.7*rescale))
     n_dots = 10 ** 4
     phi = np.linspace(0, 2 * np.pi, n_dots)
-    set_label(ax, (r'$\phi$', [1.04, 0]),
-                  (r'$\left|F(r e^{i\phi}, e^{i\Gamma})\right|e^{-r}$', [-0.01, 1.03]))
     _pi_x_axis(ax)
     plt.plot([], [], ' ', label="$\Gamma = 10^{-4}$", c='C10')
     for r, gamma in ((10 ** 4, 10 ** -4), (2 * 10 ** 4, 10 ** -4), (3.1 * 10 ** 4, 10 ** -4))[::-1]:
         vals = Fn_2b(r, phi, gamma)
-        plt.plot(phi, vals, label=f'r={r * gamma}/$\Gamma$')
+        plt.plot(phi, vals, label=f'r={r * gamma}/$\Gamma$', linestyle='-')
+    set_label(ax, (r'$\phi$', [1.05, -0.03]), (r'$F(r e^{i\phi}, \Gamma)$', [-0.05, 1.03]))
     plt.legend()
+
 
 
 def set_label(axes, x_label_params: tuple[str, list[float]], y_label_params):
@@ -76,6 +78,7 @@ def multiple_formatter(denominator=2, number=np.pi, latex='\pi'):
 
 
 if __name__ == '__main__':
+    ten_pt_text()
     Fn_plot()
     # plt.show()
-    plt.savefig('Fn_depending_on_phi', dpi=600)
+    plt.savefig('Fn_depending_on_phi', dpi=500)

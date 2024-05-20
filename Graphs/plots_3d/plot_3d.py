@@ -1,10 +1,15 @@
 import numpy as np
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 from mpl_toolkits.axes_grid1.inset_locator import mark_inset, zoomed_inset_axes
 
 from SPM_distributions.Graphs.plots_3d.XYZ_preparation import XYZ_from_npy
 from SPM_distributions.Graphs.plots_3d.main_parts_functions import main_part_husimi, main_part_wigner
 from SPM_distributions.Graphs.husimi_connected_2d_plots.F_phi_dependence import set_label
+from SPM_distributions.Graphs.husimi_connected_2d_plots.plot_steepest_descent \
+    import default_figsize, ten_pt_text, fixed_axes
+
+
 
 def plot_3d(X, Y, Z, cmap='inferno'):
     ax = plt.figure().add_subplot(111, projection='3d')
@@ -12,6 +17,7 @@ def plot_3d(X, Y, Z, cmap='inferno'):
 
 
 def plot_contourf(X, Y, Z, cmap='inferno'):
+    fixed_axes(X[0,0], X[-1,0], Y[0,0], Y[0,-1], (3.15,3.15))
     cs = plt.contourf(X, Y, Z, levels=20, cmap=cmap)
     plt.colorbar(cs)
     set_label(plt.gca(), (r'Re$\beta-|\alpha|$', [1.13, -0.03]), (r'Im$\beta$', [0.01, 1.03]))
@@ -51,30 +57,36 @@ def _small_plot(X_s, Y_s, Z_s, zoom, levels, cmap):
     plt.contourf(X_s, Y_s, Z_s, levels=levels, cmap=cmap)
     mark_inset(big_ax, small_ax, loc1=1, loc2=3, fc="none", ec="0.5")
 
+def slicer(arr, d = 1):
+    return arr[d:-d, :]
+
 
 if __name__ == '__main__':
+    ten_pt_text()
     # if you call main_part_husimi it is rather fast, if you call main_part_wigner it is rather slow.
     # This is because each point in husimi and wigner plots calculates at O(1) and O(alpha) respectively
     from time import time
 
-    target_func = ['husimi', 'wigner'][1]
+    target_func = ['husimi', 'wigner'][0]
     s = time()
 
     if target_func == 'husimi':
         X, Y, Z = main_part_husimi(2.7 * 1000, 10 ** -6, freq=500)
+        print()
         plot_contourf(X, Y, Z)
         # plot_3d(X, Y, Z)
     elif target_func == 'wigner':
         # freq=100 ~ 30s, freq=1000 ~ 50min
-        X, Y, Z = main_part_wigner(2.7 * 1000*1j, 10 ** -6, freq=100, rect_width=1, rect_height=20, save_arr_name=None)
-        # X, Y, Z = XYZ_from_npy('freq500_w3_h60.npy')
+        # X, Y, Z = main_part_wigner(2.7 * 1000*1j, 10 ** -6, freq=100, rect_width=3, rect_height=60, save_arr_name=None)
+        X, Y, Z = XYZ_from_npy('freq500_w3_h60.npy')
+        X, Y, Z = slicer(X), slicer(Y), slicer(Z)
         levels = plot_contourf(X, Y, Z)
         show_zoomed = False
-        # zoom_plot(X, Y, Z, (-0.2, 0.2, -4, 4), 3)
+        zoom_plot(X, Y, Z, (-0.2, 0.2, -4, 4), 3)
         if show_zoomed is True:
             # X_s, Y_s, Z_s = main_part_wigner(2.7 * 1000, 10 ** -6, freq=300, rect_width=0.4, rect_height=8,
             #                                  save_arr_name='')
             X_s, Y_s, Z_s = XYZ_from_npy('freq500_w3_h60.npy')
             wigner_small_plot(X_s, Y_s, Z_s, 3, levels)
     print(f'finished in {"%.2f" % (time() - s)} seconds')
-    plt.show()
+    plt.savefig('1', dpi=500)
