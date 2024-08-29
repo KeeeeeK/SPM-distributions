@@ -8,7 +8,7 @@ half_ln_two_pi = 1 / 2 * np.log(two_pi)
 number_type = float | int | np.ndarray
 
 
-@nb.vectorize('float64(float64, float64, float64, float64)', nopython=True, target_backend='cpu', fastmath=False)
+@nb.vectorize('float64(float64, float64, float64, float64)', nopython=True, target='parallel', fastmath=False)
 def Fn_sum(r: number_type, phi: number_type, gamma: number_type, n_sigma: number_type) -> nb.float64:
     """
     This is method of calculating F normalized, using direct summation.

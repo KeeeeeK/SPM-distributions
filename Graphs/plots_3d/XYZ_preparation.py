@@ -9,8 +9,9 @@ def XY_rect(x_mean: float | int, x_range: float | int, x_freq: float | int,
                     y_mean - y_range:y_mean + y_range:complex(0, y_freq)]
 
 
-def XYZ_from_npy(file_name: str):
-    with open(sys.path[0] + '/' + file_name, 'rb') as f:
+def XYZ_from_npy(file_name: str, absolute_path_to_file=False):
+    absolute_path = sys.path[0] + '/' + file_name if absolute_path_to_file is False else file_name
+    with open(absolute_path, 'rb') as f:
         Z = np.load(f)
         rect_width, rect_height = np.load(f)
     X, Y = XY_rect(0, rect_width / 2, Z.shape[0], 0, rect_height / 2, Z.shape[1])

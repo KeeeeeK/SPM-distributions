@@ -67,7 +67,7 @@ if __name__ == '__main__':
     # This is because each point in husimi and wigner plots calculates at O(1) and O(alpha) respectively
     from time import time
 
-    target_func = ['husimi', 'wigner'][0]
+    target_func = ['husimi', 'wigner'][1]
     s = time()
 
     if target_func == 'husimi':
@@ -77,16 +77,16 @@ if __name__ == '__main__':
         # plot_3d(X, Y, Z)
     elif target_func == 'wigner':
         # freq=100 ~ 30s, freq=1000 ~ 50min
-        # X, Y, Z = main_part_wigner(2.7 * 1000*1j, 10 ** -6, freq=100, rect_width=3, rect_height=60, save_arr_name=None)
+        # X, Y, Z = main_part_wigner(2.7 * 1000*1j, 10 ** -6, freq=500, rect_width=3, rect_height=60, save_arr_name=None)
         X, Y, Z = XYZ_from_npy('freq500_w3_h60.npy')
         X, Y, Z = slicer(X), slicer(Y), slicer(Z)
-        levels = plot_contourf(X, Y, Z)
+        levels = plot_contourf(X, Y, Z,  cmap='cool')
         show_zoomed = False
-        zoom_plot(X, Y, Z, (-0.2, 0.2, -4, 4), 3)
+        zoom_plot(X, Y, Z, (-0.2, 0.2, -4, 4), 3, cmap='cool')
         if show_zoomed is True:
-            # X_s, Y_s, Z_s = main_part_wigner(2.7 * 1000, 10 ** -6, freq=300, rect_width=0.4, rect_height=8,
+            # X_s, Y_s, Z_s = main_part_wigner(2.7 * 1000, 10 ** -6, freq=500, rect_width=3, rect_height=60,
             #                                  save_arr_name='')
             X_s, Y_s, Z_s = XYZ_from_npy('freq500_w3_h60.npy')
-            wigner_small_plot(X_s, Y_s, Z_s, 3, levels)
+            wigner_small_plot(X_s, Y_s, Z_s, 3, levels, cmap='cool')
     print(f'finished in {"%.2f" % (time() - s)} seconds')
     plt.savefig('1', dpi=500)

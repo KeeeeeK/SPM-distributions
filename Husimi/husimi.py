@@ -15,7 +15,7 @@ def husimi(alpha_abs: number_type, alpha_arg: number_type,
     beta is a parameter of wigner function
     :param beta_abs: module of beta
     :param beta_arg: angle of beta
-    :param gamma: parameter of non-linearity. In the article it is named \Gamma
+    :param gamma: parameter of non-linearity. In the article it is named \\Gamma
     :param method: the method that will be used to find the values of the F normalized.
      It should be on of 'sum' (direct summation), '1b' (1 branch), '2b' (2 branches).
      For further details see the documentation in the F_normalized.py file

@@ -85,7 +85,7 @@ def plot_zoomed_ln_summand_K0(alpha_abs: float | int, beta_abs: float | int, gam
 
 if __name__ == '__main__':
     ten_pt_text()
-    target_func = ['ln_I_k', 'unusual_ln_summand_K0', 'zoomed_ln_summand_K0'][0]
+    target_func = ['ln_I_k', 'unusual_ln_summand_K0', 'zoomed_ln_summand_K0'][1]
     if target_func == 'ln_I_k':
         plot_ln_I_k(300, 0.01)
     elif target_func == 'unusual_ln_summand_K0':

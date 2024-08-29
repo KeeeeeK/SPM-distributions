@@ -30,10 +30,10 @@ def qutip_psi(N_dim: int, alpha_module: float, gamma: float, alpha_angle: float 
 
 def w_cut_by_two_methods(alpha_abs, gamma, alpha_angle, xvec):
     # qutip preparation
-    N_dim = int(alpha_abs ** 2 + 5 * alpha_abs)
+    N_dim = int(alpha_abs ** 2 + 15 * alpha_abs + 30)
     psi = qutip_psi(N_dim, alpha_abs, gamma, alpha_angle)
     # Wigner calculation
-    my_W = my_wigner(alpha_abs, alpha_angle, xvec, 0, gamma, 10 ** -6)
+    my_W = my_wigner(alpha_abs, alpha_angle, xvec, 0, gamma, 10 ** -14)
     qutip_W = 2 * wigner(psi, xvec * np.sqrt(2), 0)[0]  # the formula is different because we count W(alpha),not W(x, p)
     return my_W, qutip_W
 
@@ -58,22 +58,36 @@ def cut_comparison():
 
 
 def cut_diff_max_comparison():
-    alpha_abs_arr = np.arange(6.5, 16, 0.5)
-    gamma_arr = 3 / alpha_abs_arr ** 2
-    diff_arr = []
-    for i in tqdm(range(len(alpha_abs_arr))):
-        alpha_abs = alpha_abs_arr[i]
-        gamma = gamma_arr[i]
-        alpha_angle: float = -2 * alpha_abs ** 2 * gamma
-        x_mean, x_range, x_freq = alpha_abs, 3., 1000
-        xvec = x_mean + np.linspace(-x_range, x_range, x_freq)
-        my_W, qutip_W = w_cut_by_two_methods(alpha_abs, gamma, alpha_angle, xvec)
-        diff_arr.append(np.max(np.abs(my_W - qutip_W)))
-
-    y = np.array(diff_arr) * 10 ** 4
-    ax = fixed_axes(0, np.max(gamma_arr) * 1.02, 0, np.max(y) * 1.02, figsize=(3.15, 3.15 * 0.7))
-    plt.plot(gamma_arr, y, label='diff_max')
-    set_label(ax, (r'$\Gamma$', [1.05, -0.03]), (r'$\Delta W\cdot10^4$', [0.01, 1.03]))
+    # alpha_abs_arr = np.arange(6.5, 16, 0.33)
+    # gamma_arr = 3 / alpha_abs_arr ** 2
+    # diff_arr = []
+    # for i in tqdm(range(len(alpha_abs_arr))):
+    #     alpha_abs = alpha_abs_arr[i]
+    #     gamma = gamma_arr[i]
+    #     alpha_angle: float = -2 * alpha_abs ** 2 * gamma
+    #     x_mean, x_range, x_freq = alpha_abs, 3., 1000
+    #     xvec = x_mean + np.linspace(-x_range, x_range, x_freq)
+    #     my_W, qutip_W = w_cut_by_two_methods(alpha_abs, gamma, alpha_angle, xvec)
+    #     diff_arr.append(np.max(np.abs(my_W - qutip_W)))
+    #
+    # # y = np.array(diff_arr) * 10 ** 4
+    # # ax = fixed_axes(0, np.max(gamma_arr) * 1.02, 0, np.max(y) * 1.02, figsize=(3.15, 3.15 * 0.7))
+    # # plt.plot(gamma_arr, y/gamma_arr**3, label='diff_max')
+    # y = np.array(diff_arr)
+    # # plt.plot(np.log(gamma_arr), np.log(y), label='diff_max')
+    # np.save('alpha.npy', alpha_abs_arr)
+    # np.save('y.npy', y)
+    alpha_abs_arr = np.load('alpha.npy')
+    y = np.load('y.npy')
+    ax = fixed_axes(np.min(np.log10(alpha_abs_arr)), np.max(np.log10(alpha_abs_arr)),
+                    np.min(np.log10(y)), np.max(np.log10(y)), figsize=(3.15, 3.15 * 0.7))
+    plt.plot(np.log10(alpha_abs_arr), np.log10(y), label='мера ошибки')
+    plt.plot(np.log10(alpha_abs_arr), -6*np.log10(alpha_abs_arr)-8.049563304828386/np.log(10),
+             label=r'$-6$log$\alpha+$const.')
+    print(np.mean((np.log(y) + 6 * np.log(alpha_abs_arr))[-10:]))
+    set_label(plt.gca(), (r'log$\alpha$', [1.05, -0.03]), (r'log$\Delta W$', [0.01, 1.03]))
+    # plt.yticks(np.arange(int(np.min(np.log(y))), int(np.max(np.log(y))), 2))
+    plt.legend()
     plt.savefig('diff_max', dpi=500)
 
 
@@ -88,7 +102,7 @@ def timer_asymptotic(alpha_abs: float, gamma: float, alpha_angle: float, X, Y, n
 
 
 def time_comparison():
-    alpha_arr = np.exp(np.arange(np.log(4), np.log(40), 0.07))
+    alpha_arr = np.exp(np.arange(np.log(4), np.log(40), 0.07*3))
     warnings.filterwarnings("error")
 
     alpha_arr_for_qutip, qutip_stop_calculations = [], False
@@ -117,22 +131,22 @@ def time_comparison():
                 alpha_arr_for_qutip.append(alpha_abs)
             except RuntimeWarning:
                 qutip_stop_calculations = True
-    x_asymp, x_qutip = np.log(alpha_arr), np.log(alpha_arr_for_qutip)
-    y_asymp, y_qutip = np.log(asymptotic_time_arr), np.log(qutip_time_arr)
+    x_asymp, x_qutip = np.log10(alpha_arr), np.log10(alpha_arr_for_qutip)
+    y_asymp, y_qutip = np.log10(asymptotic_time_arr), np.log10(qutip_time_arr)
 
     rescale = 1.1
     ax = fixed_axes(np.min(x_asymp)-0.03, np.max(x_asymp)+0.03, np.min(y_asymp)-0.3, np.max(y_qutip)+0.3,
                     figsize=(3.15 * rescale, 3.15 * rescale * 0.7))
-    plt.plot(x_asymp, y_asymp, label='asymptotic')
+    plt.plot(x_asymp, y_asymp, label='асимптотика')
     plt.scatter([x_qutip[-1]], [y_qutip[-1]], s=60, c='red', marker='X')
     plt.plot(x_qutip, y_qutip, label='qutip')
-    set_label(ax, (r'$\ln\alpha$', [1.03, -0.03]), (r'$\ln t/\tau$', [0.01, 1.03]))
+    set_label(ax, (r'$\log\alpha$', [1.03, -0.03]), (r'$\log t/\tau$', [0.03, 1.05]))
     plt.legend()
     plt.savefig('wigner_time', dpi=500)
-    plt.show()
+    # plt.show()
 
 
 if __name__ == '__main__':
     # cut_comparison()
-    # cut_diff_max_comparison()
-    time_comparison()
+    cut_diff_max_comparison()
+    # time_comparison()

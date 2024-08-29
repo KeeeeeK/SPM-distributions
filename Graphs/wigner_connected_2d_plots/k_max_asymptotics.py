@@ -3,6 +3,7 @@ import numba as nb
 from SPM_distributions.Husimi.F_normalized import number_type
 from SPM_distributions.Graphs.husimi_connected_2d_plots.F_phi_dependence import set_label
 import matplotlib.pyplot as plt
+from matplotlib.ticker import MaxNLocator
 from SPM_distributions.Graphs.husimi_connected_2d_plots.plot_steepest_descent \
     import default_figsize, ten_pt_text, fixed_axes
 
@@ -36,15 +37,16 @@ def plot_k_max_alpha_dependence(alpha_arr, beta_arr, gamma_arr, tol, label):
 
 if __name__ == '__main__':
     ten_pt_text()
-    plt.figure(figsize=(3.15, 3.15))
+    plt.figure(figsize=(2.15, 2.15))
     alpha_arr = np.arange(3, 3030, 30)
     ax = plt.gca()
-    gamma_arr = 2 / alpha_arr ** 2
-    for beta_addition, str_addition in ((-2, '-2'), (0, ''), (2, '+2')):
+    gamma_arr = 4 / alpha_arr ** 2
+    for beta_addition, str_addition in ((-5, '-5'), (0, ''), (5, '+5')):
         beta_arr = alpha_arr + beta_addition
         plot_k_max_alpha_dependence(alpha_arr, beta_arr, gamma_arr, 10 ** -2, f'$\\beta = \\alpha {str_addition}$')
     ax.set_xlim(0, 2990/1000)
     ax.set_ylim(0, None)
-    set_label(ax, (r'$\alpha, 10^3$', [1, -0.03]), (r'$k_{\max}, 10^3$', [-0.05, 1]))
+    ax.yaxis.set_major_locator(MaxNLocator(integer=True))
+    set_label(ax, (r'$\alpha, 10^3$', [1, -0.03]), (r'$k_{\max}, 10^3$', [0.05, 1.02]))
     plt.legend()
     plt.savefig('1', dpi=500)
